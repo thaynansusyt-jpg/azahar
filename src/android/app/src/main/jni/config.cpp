@@ -332,6 +332,18 @@ void Config::ReadValues() {
     // Web Service
     ReadSetting("WebService", Settings::values.web_api_url);
     ReadSetting("WebService", Settings::values.network_token);
+
+    // Azahar Lite: enforce the lightweight feature set even for imported/per-game INIs.
+    Settings::values.custom_textures.SetValue(false);
+    Settings::values.preload_textures.SetValue(false);
+    Settings::values.dump_textures.SetValue(false);
+    Settings::values.texture_filter.SetValue(Settings::TextureFilter::NoFilter);
+    Settings::values.render_3d.SetValue(Settings::StereoRenderOption::Off);
+    Settings::values.render_3d_which_display.SetValue(Settings::StereoWhichDisplay::None);
+    Settings::values.factor_3d.SetValue(0);
+    const auto scale = Settings::values.resolution_factor.GetValue();
+    Settings::values.resolution_factor.SetValue(scale < 1 ? 1 : (scale > 3 ? 3 : scale));
+
 }
 
 void Config::Reload() {

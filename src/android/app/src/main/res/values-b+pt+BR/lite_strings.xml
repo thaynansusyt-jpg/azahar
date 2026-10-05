@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lite_profile_title">Recomendações do Azahar Lite</string>
+    <string name="lite_profile_description">Confira seu aparelho, aplique o perfil conservador ou restaure as configurações anteriores</string>
+    <string name="lite_device_summary">%1$s\nRAM: %2$s GiB total / %3$s GiB disponível\nNúcleos da CPU: %4$d\n%5$s\n\nRecomendado: resolução nativa 1×, sem melhorias ou pré-carregamento de texturas, 3D desligado, JIT e cache de shaders ativados. Clock da CPU, API gráfica e precisão de shaders permanecem iguais. É uma recomendação inicial, sem benchmark. Configurações por jogo podem substituir este perfil.\n\nRestaurar repõe toda a configuração salva antes da primeira aplicação, incluindo alterações manuais posteriores.</string>
+    <string name="lite_low_memory">O Android relata pouca memória: feche aplicativos em segundo plano antes de jogar.</string>
+    <string name="lite_normal_memory">O Android não está relatando pouca memória.</string>
+    <string name="lite_apply">Aplicar perfil</string>
+    <string name="lite_restore">Restaurar configuração anterior</string>
+    <string name="lite_saved">Configuração salva. Será aplicada ao abrir o próximo jogo.</string>
+    <string name="lite_failed">Não foi possível salvar. Confira as permissões da pasta de usuário.</string>
+    <string name="lite_resolution_description">Digite um multiplicador inteiro de 1× a 3×. Recomendamos 1× para celulares com até 4 GB de RAM; 2× e 3× usam mais memória gráfica. Resoluções fracionárias não são suportadas.</string>
+</resources>

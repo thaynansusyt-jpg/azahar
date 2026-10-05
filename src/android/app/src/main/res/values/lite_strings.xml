@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lite_profile_title">Azahar Lite recommendations</string>
+    <string name="lite_profile_description">Review device information, apply a conservative profile or restore the previous configuration</string>
+    <string name="lite_device_summary">%1$s\nRAM: %2$s GiB total / %3$s GiB available\nCPU cores: %4$d\n%5$s\n\nRecommended: native 1×, no texture enhancement or preloading, 3D off, JIT and disk shader cache on. CPU clock, GPU backend and shader accuracy stay unchanged. This is an initial recommendation, not a benchmark. Per-game settings can override it.\n\nRestore replaces the whole configuration with the snapshot from before the first application, including later manual changes.</string>
+    <string name="lite_low_memory">Low memory reported by Android: close background applications before playing.</string>
+    <string name="lite_normal_memory">Android is not reporting low memory.</string>
+    <string name="lite_apply">Apply profile</string>
+    <string name="lite_restore">Restore previous configuration</string>
+    <string name="lite_saved">Configuration saved. It will apply on the next game launch.</string>
+    <string name="lite_failed">Could not save the configuration. Check your user folder permissions.</string>
+    <string name="lite_resolution_description">Enter an integer multiplier from 1× to 3×. Native 1× is recommended for phones with up to 4 GB RAM; 2× and 3× use more GPU memory. Fractional resolutions are not supported.</string>
+</resources>

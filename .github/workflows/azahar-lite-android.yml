@@ -1,0 +1,35 @@
+name: Azahar Lite Android
+on:
+  push:
+    branches: [azahar-lite]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: lite-android-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install Android tools
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0' 'ndk;27.3.13750724' 'cmake;3.30.3'
+      - name: Build release APK
+        working-directory: src/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleVanillaRelease --stacktrace
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Azahar-Lite-arm64-test
+          path: src/android/app/build/outputs/apk/vanilla/release/*.apk
+          if-no-files-found: error

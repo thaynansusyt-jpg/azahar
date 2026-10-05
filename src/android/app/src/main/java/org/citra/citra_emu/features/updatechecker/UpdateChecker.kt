@@ -53,7 +53,7 @@ object UpdateChecker {
 
     fun getLatestRelease(includePrereleases: Boolean): String? {
         val updateCheckUrl = "https://api.github.com"
-        var updateCheckPath = "/repos/azahar-emu/azahar"
+        var updateCheckPath = "/repos/thaynansusyt-jpg/azahar"
         if (includePrereleases) { // This can return either a prerelease or a stable release,
             // whichever is more recent.
             val updateCheckTagsPath = "$updateCheckPath/tags"

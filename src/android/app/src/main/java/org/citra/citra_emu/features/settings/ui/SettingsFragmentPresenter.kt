@@ -216,14 +216,7 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
                     Settings.SECTION_AUDIO
                 )
             )
-            add(
-                SubmenuSetting(
-                    R.string.preferences_debug,
-                    0,
-                    R.drawable.ic_code,
-                    Settings.SECTION_DEBUG
-                )
-            )
+
 
             add(
                 RunnableSetting(
@@ -960,24 +953,6 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
             )
             add(
                 SwitchSetting(
-                    BooleanSetting.SPIRV_SHADER_GEN,
-                    R.string.spirv_shader_gen,
-                    R.string.spirv_shader_gen_description,
-                    BooleanSetting.SPIRV_SHADER_GEN.key,
-                    BooleanSetting.SPIRV_SHADER_GEN.defaultValue
-                )
-            )
-            add(
-                SwitchSetting(
-                    BooleanSetting.DISABLE_SPIRV_OPTIMIZER,
-                    R.string.disable_spirv_optimizer,
-                    R.string.disable_spirv_optimizer_description,
-                    BooleanSetting.DISABLE_SPIRV_OPTIMIZER.key,
-                    BooleanSetting.DISABLE_SPIRV_OPTIMIZER.defaultValue
-                )
-            )
-            add(
-                SwitchSetting(
                     BooleanSetting.ASYNC_SHADERS,
                     R.string.async_shaders,
                     R.string.async_shaders_description,
@@ -986,14 +961,15 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
                 )
             )
             add(
-                SingleChoiceSetting(
+                SliderSetting(
                     IntSetting.RESOLUTION_FACTOR,
                     R.string.internal_resolution,
-                    R.string.internal_resolution_description,
-                    R.array.resolutionFactorNames,
-                    R.array.resolutionFactorValues,
+                    R.string.lite_resolution_description,
+                    1,
+                    3,
+                    "×",
                     IntSetting.RESOLUTION_FACTOR.key,
-                    IntSetting.RESOLUTION_FACTOR.defaultValue
+                    IntSetting.RESOLUTION_FACTOR.defaultValue.toFloat()
                 )
             )
             add(
@@ -1032,193 +1008,7 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
                     BooleanSetting.DISK_SHADER_CACHE.defaultValue
                 )
             )
-            add(
-                SingleChoiceSetting(
-                    IntSetting.TEXTURE_FILTER,
-                    R.string.texture_filter_name,
-                    R.string.texture_filter_description,
-                    R.array.textureFilterNames,
-                    R.array.textureFilterValues,
-                    IntSetting.TEXTURE_FILTER.key,
-                    IntSetting.TEXTURE_FILTER.defaultValue
-                )
-            )
-            add(
-                SliderSetting(
-                    IntSetting.DELAY_RENDER_THREAD_US,
-                    R.string.delay_render_thread,
-                    R.string.delay_render_thread_description,
-                    0,
-                    16000,
-                    " μs",
-                    IntSetting.DELAY_RENDER_THREAD_US.key,
-                    IntSetting.DELAY_RENDER_THREAD_US.defaultValue.toFloat()
-                )
-            )
 
-            add(HeaderSetting(R.string.stereoscopy))
-            add(
-                SingleChoiceSetting(
-                    IntSetting.RENDER_3D_WHICH_DISPLAY,
-                    R.string.render_3d_which_display,
-                    R.string.render_3d_which_display_description,
-                    R.array.render3dWhichDisplay,
-                    R.array.render3dDisplayValues,
-                    IntSetting.RENDER_3D_WHICH_DISPLAY.key,
-                    IntSetting.RENDER_3D_WHICH_DISPLAY.defaultValue
-                )
-            )
-            add(
-                SingleChoiceSetting(
-                    IntSetting.STEREOSCOPIC_3D_MODE,
-                    R.string.render3d,
-                    R.string.render3d_description,
-                    R.array.render3dModes,
-                    R.array.render3dValues,
-                    IntSetting.STEREOSCOPIC_3D_MODE.key,
-                    IntSetting.STEREOSCOPIC_3D_MODE.defaultValue,
-                    isEnabled =
-                        IntSetting.RENDER_3D_WHICH_DISPLAY.int != StereoWhichDisplay.NONE.int
-                )
-            )
-
-            add(
-                SliderSetting(
-                    IntSetting.STEREOSCOPIC_3D_DEPTH,
-                    R.string.factor3d,
-                    R.string.factor3d_description,
-                    0,
-                    255,
-                    "%",
-                    IntSetting.STEREOSCOPIC_3D_DEPTH.key,
-                    IntSetting.STEREOSCOPIC_3D_DEPTH.defaultValue.toFloat()
-                )
-            )
-            add(
-                SwitchSetting(
-                    BooleanSetting.DISABLE_RIGHT_EYE_RENDER,
-                    R.string.disable_right_eye_render,
-                    R.string.disable_right_eye_render_description,
-                    BooleanSetting.DISABLE_RIGHT_EYE_RENDER.key,
-                    BooleanSetting.DISABLE_RIGHT_EYE_RENDER.defaultValue
-                )
-            )
-
-            add(
-                SwitchSetting(
-                    BooleanSetting.SWAP_EYES_3D,
-                    R.string.swap_eyes_3d,
-                    R.string.swap_eyes_3d_description,
-                    BooleanSetting.SWAP_EYES_3D.key,
-                    BooleanSetting.SWAP_EYES_3D.defaultValue,
-                    isEnabled =
-                        IntSetting.RENDER_3D_WHICH_DISPLAY.int != StereoWhichDisplay.NONE.int
-                )
-            )
-
-            add(HeaderSetting(R.string.cardboard_vr))
-            add(
-                SliderSetting(
-                    IntSetting.CARDBOARD_SCREEN_SIZE,
-                    R.string.cardboard_screen_size,
-                    R.string.cardboard_screen_size_description,
-                    30,
-                    100,
-                    "%",
-                    IntSetting.CARDBOARD_SCREEN_SIZE.key,
-                    IntSetting.CARDBOARD_SCREEN_SIZE.defaultValue.toFloat(),
-                    isEnabled = IntSetting.STEREOSCOPIC_3D_MODE.int == StereoMode.CARDBOARD_VR.int
-                )
-            )
-            add(
-                SliderSetting(
-                    IntSetting.CARDBOARD_X_SHIFT,
-                    R.string.cardboard_x_shift,
-                    R.string.cardboard_x_shift_description,
-                    -100,
-                    100,
-                    "%",
-                    IntSetting.CARDBOARD_X_SHIFT.key,
-                    IntSetting.CARDBOARD_X_SHIFT.defaultValue.toFloat(),
-                    isEnabled = IntSetting.STEREOSCOPIC_3D_MODE.int == StereoMode.CARDBOARD_VR.int
-                )
-            )
-            add(
-                SliderSetting(
-                    IntSetting.CARDBOARD_Y_SHIFT,
-                    R.string.cardboard_y_shift,
-                    R.string.cardboard_y_shift_description,
-                    -100,
-                    100,
-                    "%",
-                    IntSetting.CARDBOARD_Y_SHIFT.key,
-                    IntSetting.CARDBOARD_Y_SHIFT.defaultValue.toFloat(),
-                    isEnabled = IntSetting.STEREOSCOPIC_3D_MODE.int == StereoMode.CARDBOARD_VR.int
-                )
-            )
-
-            add(HeaderSetting(R.string.utility))
-            add(
-                SwitchSetting(
-                    BooleanSetting.DUMP_TEXTURES,
-                    R.string.dump_textures,
-                    R.string.dump_textures_description,
-                    BooleanSetting.DUMP_TEXTURES.key,
-                    BooleanSetting.DUMP_TEXTURES.defaultValue
-                )
-            )
-            add(
-                SwitchSetting(
-                    BooleanSetting.CUSTOM_TEXTURES,
-                    R.string.custom_textures,
-                    R.string.custom_textures_description,
-                    BooleanSetting.CUSTOM_TEXTURES.key,
-                    BooleanSetting.CUSTOM_TEXTURES.defaultValue
-                )
-            )
-            add(
-                SwitchSetting(
-                    BooleanSetting.ASYNC_CUSTOM_LOADING,
-                    R.string.async_custom_loading,
-                    R.string.async_custom_loading_description,
-                    BooleanSetting.ASYNC_CUSTOM_LOADING.key,
-                    BooleanSetting.ASYNC_CUSTOM_LOADING.defaultValue
-                )
-            )
-
-            add(HeaderSetting(R.string.advanced))
-            add(
-                SingleChoiceSetting(
-                    IntSetting.TEXTURE_SAMPLING,
-                    R.string.texture_sampling_name,
-                    R.string.texture_sampling_description,
-                    R.array.textureSamplingNames,
-                    R.array.textureSamplingValues,
-                    IntSetting.TEXTURE_SAMPLING.key,
-                    IntSetting.TEXTURE_SAMPLING.defaultValue
-                )
-            )
-            add(
-                SwitchSetting(
-                    BooleanSetting.USE_SKIP_DUPLICATE_FRAMES,
-                    R.string.use_skip_duplicate_frames,
-                    R.string.use_skip_duplicate_frames_description,
-                    BooleanSetting.USE_SKIP_DUPLICATE_FRAMES.key,
-                    BooleanSetting.USE_SKIP_DUPLICATE_FRAMES.defaultValue
-                )
-            )
-
-            // Disabled until custom texture implementation gets rewrite, current one overloads RAM
-            // and crashes Citra.
-            // add(
-            //     SwitchSetting(
-            //         BooleanSetting.PRELOAD_TEXTURES,
-            //         R.string.preload_textures,
-            //         R.string.preload_textures_description,
-            //         BooleanSetting.PRELOAD_TEXTURES.key,
-            //         BooleanSetting.PRELOAD_TEXTURES.defaultValue
-            //     )
-            // )
         }
     }
 

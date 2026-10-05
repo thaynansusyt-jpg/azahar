@@ -42,6 +42,7 @@ import org.citra.citra_emu.ui.main.MainActivity
 import org.citra.citra_emu.utils.GameHelper
 import org.citra.citra_emu.utils.GpuDriverHelper
 import org.citra.citra_emu.utils.Log
+import org.citra.citra_emu.utils.LiteSettings
 import org.citra.citra_emu.utils.PermissionsHandler
 import org.citra.citra_emu.viewmodel.DriverViewModel
 import org.citra.citra_emu.viewmodel.HomeViewModel
@@ -77,6 +78,12 @@ class HomeSettingsFragment : Fragment() {
         mainActivity = requireActivity() as MainActivity
 
         val optionsList = listOf(
+            HomeSetting(
+                R.string.lite_profile_title,
+                R.string.lite_profile_description,
+                R.drawable.ic_settings,
+                { LiteSettings.show(requireContext()) }
+            ),
             HomeSetting(
                 R.string.grid_menu_core_settings,
                 R.string.settings_description,
