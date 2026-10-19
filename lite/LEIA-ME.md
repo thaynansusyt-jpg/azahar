@@ -1,6 +1,6 @@
 # Azahar Lite 0.1 — Performance Edition (experimental)
 
-**Código modificado real do Azahar. Esta entrega NÃO contém APK compilado e NÃO comprova ganho de desempenho.** A compilação local original e modificada parou no download do Gradle com `java.net.SocketException: Network is unreachable`. Não havia Android SDK/NDK instalado. O workflow de compilação foi escrito, mas não executado no GitHub nesta sessão.
+**APK ARM64 compilado e assinado para teste.** A compilação local terminou com `BUILD SUCCESSFUL`, e o APK passou nas verificações de assinatura, pacote, arquitetura e biblioteca nativa. A primeira tentativa havia parado na rede; nesta continuação foram instalados SDK/NDK e JDK completos e configurado o proxy correto. Não houve teste de execução em celular nem medição de ganho de desempenho. O workflow não foi executado no GitHub.
 
 ## Base e licença
 
@@ -59,7 +59,7 @@ O wrapper fixa Gradle 8.14.5; AGP 8.13.2 e Kotlin 2.0.20 seguem a base. Dependê
 
 Saída esperada: `src/android/app/build/outputs/apk/vanilla/release/app-vanilla-release.apk`. Sem `ANDROID_KEYSTORE_FILE`, o Gradle usa assinatura debug de teste inclusive na variante release. Guarde um keystore próprio para atualizações consistentes: runners novos podem gerar certificados diferentes. Nunca desinstale para resolver assinatura sem antes criar um backup.
 
-O processo tem versões de ferramentas e base fixadas, mas NÃO é promessa de APK idêntico byte a byte: assinatura, metadados e dependências transitivas influenciam o resultado. O workflow ainda depende de validação real. Não foi criado repositório remoto nem disparado Actions sem um destino fornecido.
+O processo tem versões de ferramentas e base fixadas, mas NÃO é promessa de APK idêntico byte a byte: assinatura, metadados e dependências transitivas influenciam o resultado. O workflow ainda depende de validação real. As alterações foram publicadas em uma branch separada do fork do usuário: https://github.com/thaynansusyt-jpg/azahar/tree/azahar-lite-apk01 . O build desta entrega foi executado localmente, não pelo GitHub Actions.
 
 ## Evidências e limites
 
@@ -67,11 +67,11 @@ O processo tem versões de ferramentas e base fixadas, mas NÃO é promessa de A
 |---|---|
 | Clone/base estável e histórico | Feitos localmente |
 | Compilação original | Bloqueada antes de compilar: download Gradle sem rede |
-| Compilação modificada | Mesmo bloqueio |
+| Compilação modificada | BUILD SUCCESSFUL, 55 tarefas Gradle, 2.183 passos nativos |
 | Testes Python do analisador | 4 passaram, dados sintéticos identificados como testes |
 | Contrato C++ dos relógios | `g++ -std=c++20 -fsyntax-only -Isrc lite/tests/clock_contract.cpp` passou |
 | XML de recursos Android | Parsing passou |
-| APK/assinatura/biblioteca | Ainda não gerados/verificados; workflow contém verificações |
+| APK/assinatura/biblioteca | APK 29.016.099 bytes; assinatura v2 válida; pacote org.azaharlite.emu; oito bibliotecas AArch64 e núcleo JNI verificados |
 | Samsung A15/GPU Mali/emulação real | Não disponíveis para teste |
 | FPS/p99/RAM/temperatura/carregamento | Sem resultados medidos |
 

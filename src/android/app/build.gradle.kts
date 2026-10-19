@@ -82,7 +82,9 @@ android {
                     "-DANDROID_ARM_NEON=true", // cryptopp requires Neon to work
                     "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON", // Support Android 15 16KiB page
                     // sizes
-                    "-DENABLE_GDBSTUB=OFF" // Disable GDB stub
+                    "-DENABLE_GDBSTUB=OFF", // Disable GDB stub
+                    "-DCMAKE_JOB_POOLS=compile=2",
+                    "-DCMAKE_JOB_POOL_COMPILE=compile"
                 )
             }
         }

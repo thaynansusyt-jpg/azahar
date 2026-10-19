@@ -1,0 +1,50 @@
+{
+  "apk": "Azahar_Lite_0.1_ARM64.apk",
+  "apk_bytes": 29016099,
+  "sha256": "21ebf7ad37f1a9d17286efd4d8a7eb7aa52c7d755998a0c9c7d191e09a0079cf",
+  "zip_integrity": "passed",
+  "native_libraries": [
+    {
+      "name": "lib/arm64-v8a/libSPIRV-Tools-shared.so",
+      "bytes": 2620344,
+      "machine": "AArch64"
+    },
+    {
+      "name": "lib/arm64-v8a/libVkLayer_khronos_validation.so",
+      "bytes": 23058384,
+      "machine": "AArch64"
+    },
+    {
+      "name": "lib/arm64-v8a/libcitra-android.so",
+      "bytes": 39323504,
+      "machine": "AArch64"
+    },
+    {
+      "name": "lib/arm64-v8a/libfile_redirect_hook.so",
+      "bytes": 4000,
+      "machine": "AArch64"
+    },
+    {
+      "name": "lib/arm64-v8a/libgsl_alloc_hook.so",
+      "bytes": 4312,
+      "machine": "AArch64"
+    },
+    {
+      "name": "lib/arm64-v8a/libhook_impl.so",
+      "bytes": 277888,
+      "machine": "AArch64"
+    },
+    {
+      "name": "lib/arm64-v8a/libmain_hook.so",
+      "bytes": 4216,
+      "machine": "AArch64"
+    },
+    {
+      "name": "lib/arm64-v8a/libyuv.so",
+      "bytes": 555360,
+      "machine": "AArch64"
+    }
+  ],
+  "JNI_emulator_run_entry": "present",
+  "device_execution": "not tested"
+}

@@ -2,7 +2,7 @@ name: Azahar Lite ARM64
 on:
   workflow_dispatch:
   push:
-    branches: ['azahar-lite-*']
+    branches: ['azahar-lite/**', 'azahar-lite-*']
 permissions:
   contents: read
 jobs:
