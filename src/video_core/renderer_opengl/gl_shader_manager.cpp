@@ -442,6 +442,7 @@ void ShaderProgramManager::ApplyTo(OpenGLState& state, bool accurate_mul) {
         const u64 unique_identifier = impl->current.GetConfigHash();
         OGLProgram& cached_program = impl->program_cache[unique_identifier];
         if (cached_program.handle == 0) {
+            Common::LiteTrace::Scope link_trace{Common::LiteTrace::Event::GlProgramLink};
             cached_program.Create(false,
                                   std::array{impl->current.vs, impl->current.gs, impl->current.fs});
             auto& disk_cache = impl->disk_cache;

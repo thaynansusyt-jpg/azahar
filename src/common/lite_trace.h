@@ -9,11 +9,11 @@
 namespace Common::LiteTrace {
 enum class Event : std::size_t {
     ShaderWait, PipelineBuild, TextureLoad, TextureDecode, StreamReuseWait,
-    GpuWait, GlShaderPath, StorageRead, StorageWrite, Count
+    GpuWait, GlShaderPath, StorageRead, StorageWrite, TextureUpload, GlProgramLink, Count
 };
 inline constexpr std::array<std::string_view, static_cast<std::size_t>(Event::Count)> Names{
     "shader_wait", "pipeline_build", "texture_load", "texture_decode", "stream_reuse_wait",
-    "gpu_wait", "gl_shader_path", "storage_read", "storage_write"};
+    "gpu_wait", "gl_shader_path", "storage_read", "storage_write", "texture_upload", "gl_program_link"};
 struct Value { std::uint64_t calls{}, ns{}; };
 using Snapshot = std::array<Value, Names.size()>;
 struct Counter { std::atomic<std::uint64_t> calls{0}, ns{0}; };

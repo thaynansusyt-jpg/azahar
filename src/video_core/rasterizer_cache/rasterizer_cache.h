@@ -1074,7 +1074,10 @@ void RasterizerCache<T>::UploadSurface(Surface& surface, SurfaceInterval interva
         .texture_rect = surface.GetSubRect(load_info),
         .texture_level = surface.LevelOf(load_info.addr),
     };
-    surface.Upload(upload, staging);
+    {
+        Common::LiteTrace::Scope upload_trace{Common::LiteTrace::Event::TextureUpload};
+        surface.Upload(upload, staging);
+    }
 }
 
 template <class T>
