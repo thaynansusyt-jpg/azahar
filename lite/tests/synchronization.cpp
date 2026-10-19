@@ -16,8 +16,12 @@ int main() {
         Common::AsyncHandle handle;
         int payload = 0;
         std::vector<std::future<int>> readers;
-        for (int i = 0; i < 4; ++i) readers.emplace_back(std::async(std::launch::async, [&] {
-            handle.WaitDone();
+        for (int i = 0; i < 4; ++i) readers.emplace_back(std::async(std::launch::async, [&, i] {
+            if (i == 0) {
+                while (!handle.IsDone()) std::this_thread::yield();
+            } else {
+                handle.WaitDone();
+            }
             return payload;
         }));
         std::thread producer([&] { payload = 123456; handle.MarkDone(); });

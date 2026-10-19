@@ -1,0 +1,4 @@
+UNCHANGED src/core/loader/loader.cpp SHA256 e6a0a2d32a17a0e612e7d30b55e3c070e765d66d056847a701f601da33621eb9
+UNCHANGED src/core/loader/ncch.cpp SHA256 df60ecb869d1d0a4c9cf6fecd7c0b9e7a1d37a40e6ba81b7b17bf7a0f99d7a42
+UNCHANGED src/android/app/src/main/java/org/citra/citra_emu/model/Game.kt SHA256 7a826590b2e5d15f38f1fb8da7b46bd1aba523eaf56ae85ed9fb46666c8a91a6
+UNCHANGED src/android/app/src/main/java/org/citra/citra_emu/utils/PermissionsHandler.kt SHA256 90f48af2c9ed118f3f7dc4c714bf8ecdfdd5fb7aa18c4a32e68deab36f874dde

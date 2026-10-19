@@ -1,0 +1,14 @@
+test_cache_inputs_unchanged (test_cache_contract.CacheContract.test_cache_inputs_unchanged) ... ok
+test_invalid_budget_rejected (test_frames.FrameAnalysisTests.test_invalid_budget_rejected) ... ok
+test_invalid_trace_rejected (test_frames.FrameAnalysisTests.test_invalid_trace_rejected) ... ok
+test_native_30fps_is_not_a_hitch (test_frames.FrameAnalysisTests.test_native_30fps_is_not_a_hitch) ... ok
+test_p99_exposes_hitch_despite_good_average (test_frames.FrameAnalysisTests.test_p99_exposes_hitch_despite_good_average) ... ok
+test_bad_diagnostic (test_smash_trace.TraceTests.test_bad_diagnostic) ... ok
+test_diagnostic (test_smash_trace.TraceTests.test_diagnostic) ... ok
+test_legacy (test_smash_trace.TraceTests.test_legacy) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.128s
+
+OK
+shader cache version unchanged: a5e22ca9777f1d06cb9c90cd01878d7b

@@ -1,3 +1,5 @@
+> Atualização atual: [Azahar Lite 0.2 — relatório e instalação](BUILD_0.2.md). O texto abaixo é o registro histórico da 0.1.
+
 # Azahar Lite 0.1 — Performance Edition (experimental)
 
 **APK ARM64 compilado e assinado para teste.** A compilação local terminou com `BUILD SUCCESSFUL`, e o APK passou nas verificações de assinatura, pacote, arquitetura e biblioteca nativa. A primeira tentativa havia parado na rede; nesta continuação foram instalados SDK/NDK e JDK completos e configurado o proxy correto. Não houve teste de execução em celular nem medição de ganho de desempenho. O workflow não foi executado no GitHub.
