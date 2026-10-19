@@ -66,8 +66,8 @@ android {
         applicationId = "org.azaharlite.emu"
         minSdk = 29
         targetSdk = 37
-        versionCode = 1
-        versionName = "0.1-performance"
+        versionCode = 2
+        versionName = "0.2-performance-boost"
 
         ndk {
             //noinspection ChromeOsAbiSupport
@@ -76,6 +76,7 @@ android {
 
         externalNativeBuild {
             cmake {
+                targets += listOf("citra-android")
                 arguments(
                     "-DENABLE_QT=0", // Don't use QT
                     "-DENABLE_SDL2=0", // Don't use SDL
@@ -83,7 +84,9 @@ android {
                     "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON", // Support Android 15 16KiB page
                     // sizes
                     "-DENABLE_GDBSTUB=OFF", // Disable GDB stub
-                    "-DCMAKE_JOB_POOLS=compile=2",
+                    "-DENABLE_TESTS=OFF",
+                    "-DCMAKE_JOB_POOLS=compile=4;link=1",
+                    "-DCMAKE_JOB_POOL_LINK=link",
                     "-DCMAKE_JOB_POOL_COMPILE=compile"
                 )
             }

@@ -11,5 +11,11 @@
     <string name="lite_turbo_warning">Lite Turbo ativa shaders assíncronos e desativa o olho direito. Pode causar objetos ausentes temporariamente ou incompatibilidade visual. Continuar?</string>
     <string name="lite_separate_storage">Escolha uma pasta vazia exclusiva para o Azahar Lite. Esta pasta contém dados de outro emulador e não será usada.</string>
     <string name="lite_diagnostics">Registrar tempos de quadro para diagnóstico</string>
-    <string name="lite_diagnostics_description">Grava CSV de tempo de processamento dos quadros no log ao encerrar normalmente. Não mede o tempo de apresentação da tela.</string>
+    <string name="lite_diagnostics_description">Grava CSV limitado de intervalos de quadros, shaders, texturas, armazenamento e esperas no log ao encerrar normalmente. Tem custo adicional. Não mede a apresentação da tela. Ative antes de abrir o jogo.</string>
+    <string name="lite_async_only">Teste A/B: somente shaders assíncronos (Vulkan)</string>
+    <string name="lite_eye_only">Teste A/B: somente um olho</string>
+    <string name="lite_ab_description">Altera somente as duas opções experimentais: ativa uma e desativa a outra. Reinicie o jogo. Restaurar Equilibrado desativa ambas.</string>
+    <string name="lite_async_vulkan_only">Este teste exige Vulkan. Se quiser testá-lo, escolha Vulkan no renderizador e reinicie o jogo. O backend não será alterado automaticamente.</string>
+    <string name="lite_async_warning">Ativar shaders assíncronos e manter os dois olhos? No Vulkan, alguns desenhos aguardando compilação podem ser omitidos temporariamente. Efeitos podem desaparecer até o pipeline ficar pronto; usa CPU adicional. Desenhos pequenos, comuns nos menus, ainda podem esperar. Não garante maior fluidez. Reinicie o jogo após salvar.</string>
+    <string name="lite_eye_warning">Desativar o olho direito e manter shaders síncronos? Pode reduzir trabalho gráfico em jogos 2D compatíveis, mas afeta visão estereoscópica e pode causar incompatibilidades em efeitos que dependem do segundo olho. Use profundidade 3D zero e confira os gráficos. Reinicie o jogo após salvar.</string>
 </resources>

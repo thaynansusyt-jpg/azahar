@@ -23,6 +23,21 @@ jobs:
         run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0' 'ndk;27.3.13750724' 'cmake;3.30.3'
       - name: Monotonic clock contract
         run: g++ -std=c++20 -fsyntax-only -Isrc lite/tests/clock_contract.cpp
+      - name: Synchronization and stream-buffer equivalence tests
+        run: |
+          g++ -std=c++20 -O2 -pthread -Isrc lite/tests/synchronization.cpp -o /tmp/lite-sync
+          /tmp/lite-sync
+      - name: Restore test signing key when configured
+        env:
+          KEYSTORE_B64: ${{ secrets.AZAHAR_LITE_KEYSTORE_BASE64 }}
+        run: |
+          mkdir -p "$HOME/.android"
+          if [ -n "$KEYSTORE_B64" ]; then
+            printf '%s' "$KEYSTORE_B64" | base64 --decode > "$HOME/.android/debug.keystore"
+            chmod 600 "$HOME/.android/debug.keystore"
+          else
+            echo '::warning::No persistent test key configured; generated APK may not update existing installations.'
+          fi
       - name: Python diagnostic tests
         run: python3 -m unittest discover -s lite/tests -v
       - name: Build ARM64 emulator
@@ -39,7 +54,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: Azahar-Lite-0.1-ARM64
+          name: Azahar-Lite-0.2-ARM64
           path: |
             src/android/app/build/outputs/apk/vanilla/release/*.apk
             lite/evidence/

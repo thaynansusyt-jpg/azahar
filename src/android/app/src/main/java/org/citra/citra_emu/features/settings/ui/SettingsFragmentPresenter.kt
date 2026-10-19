@@ -957,6 +957,27 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
         settingsActivity.showToastMessage(settingsActivity.getString(R.string.lite_applied), false)
     }
 
+    private fun applyLiteExperiment(async: Boolean) {
+        if (async && IntSetting.GRAPHICS_API.int != 2) {
+            MaterialAlertDialogBuilder(settingsActivity)
+                .setMessage(R.string.lite_async_vulkan_only)
+                .setPositiveButton(android.R.string.ok, null).show()
+            return
+        }
+        MaterialAlertDialogBuilder(settingsActivity)
+            .setMessage(if (async) R.string.lite_async_warning else R.string.lite_eye_warning)
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                BooleanSetting.ASYNC_SHADERS.boolean = async
+                BooleanSetting.DISABLE_RIGHT_EYE_RENDER.boolean = !async
+                listOf(BooleanSetting.ASYNC_SHADERS, BooleanSetting.DISABLE_RIGHT_EYE_RENDER)
+                    .forEach { settings.getSection(it.section!!)!!.putSetting(it) }
+                fragmentView.onSettingChanged()
+                settingsAdapter.notifyDataSetChanged()
+                settingsActivity.showToastMessage(settingsActivity.getString(R.string.lite_applied), false)
+            }.show()
+    }
+
     private fun addGraphicsSettings(sl: ArrayList<SettingsItem>) {
         settingsActivity.setToolbarTitle(settingsActivity.getString(R.string.preferences_graphics))
         sl.apply {
@@ -989,6 +1010,10 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
                 R.string.lite_diagnostics, R.string.lite_diagnostics_description,
                 BooleanSetting.RECORD_FRAME_TIMES.key,
                 BooleanSetting.RECORD_FRAME_TIMES.defaultValue))
+            add(RunnableSetting(R.string.lite_async_only, R.string.lite_ab_description, false,
+                runnable = { applyLiteExperiment(true) }))
+            add(RunnableSetting(R.string.lite_eye_only, R.string.lite_ab_description, false,
+                runnable = { applyLiteExperiment(false) }))
             add(HeaderSetting(R.string.renderer))
             add(
                 SingleChoiceSetting(
