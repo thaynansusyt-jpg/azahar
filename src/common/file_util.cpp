@@ -6,6 +6,7 @@
 // Licensed under GPLv2 or any later version
 // Refer to the license.txt file included.
 
+#include "common/lite_trace.h"
 #include <array>
 #include <fstream>
 #include <limits>
@@ -1437,6 +1438,7 @@ bool IOFile::Flush() {
 }
 
 std::size_t IOFile::ReadImpl(void* data, std::size_t length, std::size_t elem_size) {
+    Common::LiteTrace::Scope trace{Common::LiteTrace::Event::StorageRead};
     if (!IsOpen()) {
         m_good = false;
         return std::numeric_limits<std::size_t>::max();
@@ -1484,6 +1486,7 @@ static std::size_t pread(int fd, void* buf, std::size_t count, uint64_t offset) 
 #endif
 
 std::size_t IOFile::ReadAtImpl(void* data, std::size_t byte_count, std::size_t offset) {
+    Common::LiteTrace::Scope trace{Common::LiteTrace::Event::StorageRead};
     if (!IsOpen()) {
         m_good = false;
         return std::numeric_limits<std::size_t>::max();
@@ -1514,6 +1517,7 @@ std::size_t IOFile::ReadAtImpl(void* data, std::size_t byte_count, std::size_t o
 }
 
 std::size_t IOFile::WriteImpl(const void* data, std::size_t length, std::size_t elem_size) {
+    Common::LiteTrace::Scope trace{Common::LiteTrace::Event::StorageWrite};
     if (!IsOpen()) {
         m_good = false;
         return std::numeric_limits<std::size_t>::max();

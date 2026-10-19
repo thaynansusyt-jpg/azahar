@@ -34,10 +34,14 @@ bool PerfStats::game_frames_updated = true;
 PerfStats::PerfStats(u64 title_id) : title_id(title_id) {
     if (Settings::values.record_frame_times) {
         lite_game_intervals.reserve(36000);
+        lite_samples.reserve(36000);
+        Common::LiteTrace::enabled.store(true, std::memory_order_relaxed);
+        lite_previous_counters = Common::LiteTrace::Read();
     }
 }
 
 PerfStats::~PerfStats() {
+    Common::LiteTrace::enabled.store(false, std::memory_order_relaxed);
     if (!Settings::values.record_frame_times || title_id == 0 || current_index <= IgnoreFrames) {
         return;
     }
@@ -49,7 +53,8 @@ PerfStats::~PerfStats() {
     const std::string& path = FileUtil::GetUserPath(FileUtil::UserPath::LogDir);
     // %F Date format expanded is "%Y-%m-%d"
     const std::string filename =
-        fmt::format("{}/{:%F-%H-%M}_{:016X}.csv", path, *std::localtime(&t), title_id);
+        fmt::format("{}/{:%F-%H-%M-%S}_{}_{:016X}.csv", path, *std::localtime(&t),
+                    Clock::now().time_since_epoch().count(), title_id);
     FileUtil::IOFile file(filename, "w");
     file.WriteString(stream.str());
     if (!lite_game_intervals.empty()) {
@@ -59,6 +64,17 @@ PerfStats::~PerfStats() {
             intervals << ms << '\n';
         }
         intervals_file.WriteString(intervals.str());
+        FileUtil::IOFile trace_file(filename + ".lite-trace.csv", "w");
+        std::ostringstream trace;
+        trace << "interval_ms";
+        for (auto name : Common::LiteTrace::Names) trace << ',' << name << "_calls," << name << "_ms";
+        trace << '\n';
+        for (const auto& sample : lite_samples) {
+            trace << sample.interval_ms;
+            for (const auto& value : sample.counters) trace << ',' << value.calls << ',' << value.ns / 1e6;
+            trace << '\n';
+        }
+        trace_file.WriteString(trace.str());
     }
 }
 
@@ -125,9 +141,18 @@ void PerfStats::EndGameFrame() {
     if (lite_game_intervals.capacity() != 0) {
         const auto now = Clock::now();
         if (lite_has_previous_game_frame && lite_game_intervals.size() < 36000) {
-            lite_game_intervals.push_back(
-                std::chrono::duration<double, std::milli>(now - lite_previous_game_frame).count());
+            const double ms = std::chrono::duration<double, std::milli>(now - lite_previous_game_frame).count();
+            auto snapshot = Common::LiteTrace::Read();
+            auto delta = snapshot;
+            for (std::size_t i = 0; i < delta.size(); ++i) {
+                delta[i].calls -= lite_previous_counters[i].calls;
+                delta[i].ns -= lite_previous_counters[i].ns;
+            }
+            lite_game_intervals.push_back(ms);
+            lite_samples.push_back({ms, delta});
+            lite_previous_counters = snapshot;
         }
+        if (!lite_has_previous_game_frame) lite_previous_counters = Common::LiteTrace::Read();
         lite_previous_game_frame = now;
         lite_has_previous_game_frame = true;
     }

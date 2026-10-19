@@ -6,6 +6,8 @@
 // Licensed under GPLv2 or any later version
 // Refer to the license.txt file included.
 
+#include "common/lite_trace.h"
+#include "common/stream_buffer_wait.h"
 #include <algorithm>
 #include <limits>
 #include "common/alignment.h"
@@ -272,12 +274,15 @@ void StreamBuffer::WaitPendingOperations(u64 requested_upper_bound) {
     if (!invalidation_mark) {
         return;
     }
-    while (requested_upper_bound > wait_bound && wait_cursor < *invalidation_mark) {
-        auto& watch = previous_watches[wait_cursor];
-        wait_bound = watch.upper_bound;
-        scheduler.Wait(watch.tick);
-        ++wait_cursor;
+    const std::span<const Watch> watches{previous_watches.data(), *invalidation_mark};
+    const auto last = Common::LastWatchToWait(watches, wait_cursor, wait_bound, requested_upper_bound);
+    if (last == watches.size()) {
+        return;
     }
+    Common::LiteTrace::Scope trace{Common::LiteTrace::Event::StreamReuseWait};
+    scheduler.Wait(watches[last].tick);
+    wait_bound = watches[last].upper_bound;
+    wait_cursor = last + 1;
 }
 
 } // namespace Vulkan

@@ -12,6 +12,7 @@
 #include <mutex>
 #include <vector>
 #include "common/bit_field.h"
+#include "common/lite_trace.h"
 #include "common/common_types.h"
 #include "common/thread.h"
 
@@ -134,6 +135,12 @@ private:
     std::size_t current_index{0};
     // Optional ten-minute game-submission trace (at 60 Hz), not display scanout.
     std::vector<double> lite_game_intervals;
+    struct LiteSample {
+        double interval_ms;
+        Common::LiteTrace::Snapshot counters;
+    };
+    std::vector<LiteSample> lite_samples;
+    Common::LiteTrace::Snapshot lite_previous_counters{};
     Clock::time_point lite_previous_game_frame{};
     bool lite_has_previous_game_frame = false;
     /// Stores an hour of historical frametime data useful for processing and tracking performance

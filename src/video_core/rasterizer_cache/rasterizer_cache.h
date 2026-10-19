@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "common/lite_trace.h"
 #include <type_traits>
 #include <boost/container/small_vector.hpp>
 #include <boost/range/iterator_range.hpp>
@@ -1038,6 +1039,7 @@ void RasterizerCache<T>::ValidateSurface(SurfaceId surface_id, PAddr addr, u32 s
 
 template <class T>
 void RasterizerCache<T>::UploadSurface(Surface& surface, SurfaceInterval interval) {
+    Common::LiteTrace::Scope trace{Common::LiteTrace::Event::TextureLoad};
     MICROPROFILE_SCOPE(RasterizerCache_UploadSurface);
 
     const SurfaceParams load_info = surface.FromInterval(interval);
@@ -1052,8 +1054,11 @@ void RasterizerCache<T>::UploadSurface(Surface& surface, SurfaceInterval interva
     }
 
     const auto upload_data = source_ptr.GetWriteBytes(load_info.end - load_info.addr);
-    DecodeTexture(load_info, load_info.addr, load_info.end, upload_data, staging.mapped,
-                  runtime.NeedsConversion(surface));
+    {
+        Common::LiteTrace::Scope decode_trace{Common::LiteTrace::Event::TextureDecode};
+        DecodeTexture(load_info, load_info.addr, load_info.end, upload_data, staging.mapped,
+                      runtime.NeedsConversion(surface));
+    }
 
     const bool should_dump = False(surface.flags & SurfaceFlagBits::Custom) &&
                              False(surface.flags & SurfaceFlagBits::RenderTarget);

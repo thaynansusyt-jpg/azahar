@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include <limits>
+#include "common/lite_trace.h"
 #include <mutex>
 #include "video_core/renderer_vulkan/vk_instance.h"
 #include "video_core/renderer_vulkan/vk_master_semaphore.h"
@@ -54,6 +55,7 @@ void MasterSemaphoreTimeline::Wait(u64 tick) {
         .pValues = &tick,
     };
 
+    Common::LiteTrace::Scope trace{Common::LiteTrace::Event::GpuWait};
     while (instance.GetDevice().waitSemaphoresKHR(&wait_info, WAIT_TIMEOUT) !=
            vk::Result::eSuccess) {
     }
@@ -120,6 +122,10 @@ MasterSemaphoreFence::~MasterSemaphoreFence() {
 void MasterSemaphoreFence::Refresh() {}
 
 void MasterSemaphoreFence::Wait(u64 tick) {
+    if (IsFree(tick)) {
+        return;
+    }
+    Common::LiteTrace::Scope trace{Common::LiteTrace::Event::GpuWait};
     std::unique_lock lk{free_mutex};
     free_cv.wait(lk, [&] { return gpu_tick.load(std::memory_order_relaxed) >= tick; });
 }

@@ -2,6 +2,7 @@
 // Licensed under GPLv2 or any later version
 // Refer to the license.txt file included.
 
+#include "common/lite_trace.h"
 #include <algorithm>
 #include <mutex>
 #include <set>
@@ -359,6 +360,7 @@ bool ShaderProgramManager::UseProgrammableVertexShader(const Pica::RegsInternal&
                                                        Pica::ShaderSetup& setup,
                                                        bool accurate_mul) {
 
+    Common::LiteTrace::Scope trace{Common::LiteTrace::Event::GlShaderPath};
     PicaVSConfig config{regs, setup};
     ExtraVSConfig extra = impl->CalcExtraConfig(config, accurate_mul);
 
@@ -408,6 +410,7 @@ void ShaderProgramManager::UseTrivialGeometryShader() {
 
 void ShaderProgramManager::UseFragmentShader(const Pica::RegsInternal& regs,
                                              const Pica::Shader::UserConfig& user) {
+    Common::LiteTrace::Scope trace{Common::LiteTrace::Event::GlShaderPath};
     const FSConfig fs_config{regs};
     auto [hash, handle, result] = impl->fragment_shaders.Get(fs_config, user, impl->profile);
     impl->current.fs = handle;
