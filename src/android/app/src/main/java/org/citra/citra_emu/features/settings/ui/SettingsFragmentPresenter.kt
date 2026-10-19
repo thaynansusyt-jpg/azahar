@@ -28,6 +28,7 @@ import org.citra.citra_emu.features.settings.model.AbstractStringSetting
 import org.citra.citra_emu.features.settings.model.BooleanSetting
 import org.citra.citra_emu.features.settings.model.FloatSetting
 import org.citra.citra_emu.features.settings.model.IntListSetting
+import org.citra.citra_emu.features.settings.model.LitePerformance
 import org.citra.citra_emu.features.settings.model.IntSetting
 import org.citra.citra_emu.features.settings.model.ScaledFloatSetting
 import org.citra.citra_emu.features.settings.model.Settings
@@ -126,6 +127,12 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
             else -> {
                 fragmentView.showToastMessage("Unimplemented menu", false)
                 return
+            }
+        }
+        if (gameId.isNotEmpty() && menuTag == Settings.SECTION_RENDERER) {
+            val keys = LitePerformance.settings().map { it.key }.toSet()
+            sl.removeAll { item ->
+                item.setting?.key?.let { it !in keys } ?: (item !is RunnableSetting && item !is HeaderSetting)
             }
         }
         settingsList = sl
@@ -941,9 +948,47 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
             override val defaultValue = ""
         }
 
+    private fun applyLiteProfile(profile: Int) {
+        LitePerformance.apply(profile).forEach { setting ->
+            settings.getSection(setting.section!!)!!.putSetting(setting)
+        }
+        fragmentView.onSettingChanged()
+        settingsAdapter.notifyDataSetChanged()
+        settingsActivity.showToastMessage(settingsActivity.getString(R.string.lite_applied), false)
+    }
+
     private fun addGraphicsSettings(sl: ArrayList<SettingsItem>) {
         settingsActivity.setToolbarTitle(settingsActivity.getString(R.string.preferences_graphics))
         sl.apply {
+            add(HeaderSetting(R.string.lite_performance))
+            add(
+                RunnableSetting(R.string.lite_profiles, R.string.lite_profiles_description, false,
+                    runnable = {
+                        MaterialAlertDialogBuilder(settingsActivity)
+                            .setTitle(R.string.lite_performance)
+                            .setItems(arrayOf(
+                                settingsActivity.getString(R.string.lite_stable),
+                                settingsActivity.getString(R.string.lite_balanced),
+                                settingsActivity.getString(R.string.lite_turbo)
+                            )) { _, which ->
+                                if (which == 2) {
+                                    MaterialAlertDialogBuilder(settingsActivity)
+                                        .setMessage(R.string.lite_turbo_warning)
+                                        .setNegativeButton(android.R.string.cancel, null)
+                                        .setPositiveButton(android.R.string.ok) { _, _ -> applyLiteProfile(which) }
+                                        .show()
+                                } else {
+                                    applyLiteProfile(which)
+                                }
+                            }.show()
+                    })
+            )
+            add(RunnableSetting(R.string.lite_restore, 0, false,
+                runnable = { applyLiteProfile(1) }))
+            add(SwitchSetting(BooleanSetting.RECORD_FRAME_TIMES,
+                R.string.lite_diagnostics, R.string.lite_diagnostics_description,
+                BooleanSetting.RECORD_FRAME_TIMES.key,
+                BooleanSetting.RECORD_FRAME_TIMES.defaultValue))
             add(HeaderSetting(R.string.renderer))
             add(
                 SingleChoiceSetting(

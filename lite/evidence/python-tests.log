@@ -1,0 +1,9 @@
+test_invalid_budget_rejected (test_frames.FrameAnalysisTests.test_invalid_budget_rejected) ... ok
+test_invalid_trace_rejected (test_frames.FrameAnalysisTests.test_invalid_trace_rejected) ... ok
+test_native_30fps_is_not_a_hitch (test_frames.FrameAnalysisTests.test_native_30fps_is_not_a_hitch) ... ok
+test_p99_exposes_hitch_despite_good_average (test_frames.FrameAnalysisTests.test_p99_exposes_hitch_despite_good_average) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.000s
+
+OK

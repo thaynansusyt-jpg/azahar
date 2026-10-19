@@ -4,6 +4,9 @@
 
 #include <boost/container/static_vector.hpp>
 
+#ifdef ANDROID
+#include "common/android_utils.h"
+#endif
 #include "common/common_paths.h"
 #include "common/file_util.h"
 #include "common/logging/log.h"
@@ -242,6 +245,14 @@ void PipelineCache::LoadDriverPipelineDiskCache(
     }
 
     const u64 cache_file_size = cache_file.GetSize();
+    // Bound transient host RAM used for a single driver cache. Ignore oversized caches
+    // without touching game data; the driver can rebuild a fresh cache normally.
+    constexpr u64 MaxDriverCacheBytes = 64ULL * 1024 * 1024;
+    if (cache_file_size > MaxDriverCacheBytes) {
+        LOG_WARNING(Render_Vulkan, "Driver cache exceeds Lite 64 MiB load limit; rebuilding");
+        load_cache(false);
+        return;
+    }
     cache_data.resize(cache_file_size);
 
     if (cache_file.ReadBytes(cache_data.data(), cache_file_size) != cache_file_size) {
@@ -281,17 +292,45 @@ void PipelineCache::SaveDriverPipelineDiskCache() {
     const auto cache_file_path =
         fmt::format("{}{:016X}-{:X}{:X}.bin", cache_dir, program_id, vendor_id, device_id);
 
-    FileUtil::IOFile cache_file{cache_file_path, "wb"};
+    const vk::Device device = instance.GetDevice();
+    std::vector<u8> cache_data;
+    try {
+        cache_data = device.getPipelineCacheData(*driver_pipeline_cache);
+    } catch (const vk::SystemError& err) {
+        LOG_WARNING(Render_Vulkan, "Keeping previous pipeline cache: {}", err.what());
+        return;
+    }
+    if (cache_data.size() > 64ULL * 1024 * 1024) {
+        LOG_WARNING(Render_Vulkan, "Skipping driver cache larger than Lite 64 MiB limit");
+        return;
+    }
+    // Do not truncate the warm cache before driver serialization or on a short write.
+    bool can_replace_atomically = true;
+#ifdef ANDROID
+    // SAF renameDocument does not guarantee replacement of an existing document.
+    can_replace_atomically = AndroidUtils::CanUseRawFS();
+#endif
+    const auto temporary_path = can_replace_atomically ? cache_file_path + ".tmp" : cache_file_path;
+    FileUtil::IOFile cache_file{temporary_path, "wb"};
     if (!cache_file.IsOpen()) {
         LOG_ERROR(Render_Vulkan, "Unable to open pipeline cache for writing");
         return;
     }
 
-    const vk::Device device = instance.GetDevice();
-    const auto cache_data = device.getPipelineCacheData(*driver_pipeline_cache);
     if (cache_file.WriteBytes(cache_data.data(), cache_data.size()) != cache_data.size()) {
         LOG_ERROR(Render_Vulkan, "Error during pipeline cache write");
+        cache_file.Close();
+        if (can_replace_atomically) {
+            FileUtil::Delete(temporary_path);
+        }
         return;
+    }
+    if (!cache_file.Close()) {
+        LOG_WARNING(Render_Vulkan, "Keeping previous cache after close failure");
+        return;
+    }
+    if (can_replace_atomically && !FileUtil::Rename(temporary_path, cache_file_path)) {
+        LOG_WARNING(Render_Vulkan, "Keeping previous cache after rename failure");
     }
 }
 
@@ -588,7 +627,7 @@ bool PipelineCache::IsCacheValid(std::span<const u8> data) const {
 
     vk::PipelineCacheHeaderVersionOne header;
     std::memcpy(&header, data.data(), sizeof(header));
-    if (header.headerSize < sizeof(header)) {
+    if (header.headerSize < sizeof(header) || header.headerSize > data.size()) {
         LOG_ERROR(Render_Vulkan, "Pipeline cache failed validation: Invalid header length");
         return false;
     }

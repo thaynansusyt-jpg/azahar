@@ -23,6 +23,7 @@ public:
     ~Config();
 
     void Reload();
+    static void ApplyLiteGameSettings(u64 program_id);
 
 private:
     /**

@@ -183,9 +183,21 @@ object SettingsFile {
     }
 
     private fun getCustomGameSettingsFile(gameId: String): DocumentFile {
-        val root = DocumentFile.fromTreeUri(CitraApplication.appContext, Uri.parse(userDirectory))
-        val configDirectory = root!!.findFile("GameSettings")
-        return configDirectory!!.findFile("$gameId.ini")!!
+        require(gameId.matches(Regex("[0-9a-fA-F]{16}")))
+        val root = DocumentFile.fromTreeUri(CitraApplication.appContext, Uri.parse(userDirectory))!!
+        val directory = root.findFile("GameSettings") ?: root.createDirectory("GameSettings")!!
+        return directory.findFile("${gameId.uppercase()}.ini") ?: directory.createFile("application/octet-stream", "${gameId.uppercase()}.ini")!!
+    }
+
+    fun saveLiteGameSettings(gameId: String, values: List<AbstractSetting>) {
+        val file = getCustomGameSettingsFile(gameId)
+        val resolver = CitraApplication.appContext.contentResolver
+        val writer = Wini()
+        resolver.openInputStream(file.uri)!!.use { input ->
+            if (file.length() > 0) writer.load(input)
+        }
+        values.forEach { writer.put(it.section, it.key, it.valueAsString) }
+        resolver.openOutputStream(file.uri, "wt")!!.use { writer.store(it) }
     }
 
     private fun sectionFromLine(line: String, isCustomGame: Boolean): SettingSection {

@@ -25,6 +25,16 @@ class CitraDirectoryHelper(
         callback: SetupCallback? = null,
         buttonState: () -> Unit
     ) {
+        val root = androidx.documentfile.provider.DocumentFile.fromTreeUri(fragmentActivity, result)
+        if (root != null && root.findFile("azahar-lite-owned.txt") == null &&
+            listOf("config", "nand", "sdmc", "states").any { root.findFile(it) != null }
+        ) {
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(fragmentActivity)
+                .setMessage(org.citra.citra_emu.R.string.lite_separate_storage)
+                .setPositiveButton(android.R.string.ok, null).show()
+            buttonState()
+            return
+        }
         val citraDirectoryDialog = CitraDirectoryDialogFragment.newInstance(
             fragmentActivity,
             result.toString(),

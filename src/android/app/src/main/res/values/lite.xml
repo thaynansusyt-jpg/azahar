@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lite_performance">Azahar Lite Performance</string>
+    <string name="lite_profiles">Aplicar perfil de desempenho</string>
+    <string name="lite_profiles_description">Fork independente. Equilibrado recomendado. Aplicar substitui somente as opções gráficas do perfil; depois você pode personalizá-las.</string>
+    <string name="lite_stable">Estável</string>
+    <string name="lite_balanced">Equilibrado (recomendado)</string>
+    <string name="lite_turbo">Lite Turbo</string>
+    <string name="lite_restore">Restaurar configurações recomendadas</string>
+    <string name="lite_applied">Perfil aplicado. Salve saindo das configurações antes de abrir o jogo.</string>
+    <string name="lite_turbo_warning">Lite Turbo ativa shaders assíncronos e desativa o olho direito. Pode causar objetos ausentes temporariamente ou incompatibilidade visual. Continuar?</string>
+    <string name="lite_separate_storage">Escolha uma pasta vazia exclusiva para o Azahar Lite. Esta pasta contém dados de outro emulador e não será usada.</string>
+    <string name="lite_diagnostics">Registrar tempos de quadro para diagnóstico</string>
+    <string name="lite_diagnostics_description">Grava CSV de tempo de processamento dos quadros no log ao encerrar normalmente. Não mede o tempo de apresentação da tela.</string>
+</resources>

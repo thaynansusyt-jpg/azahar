@@ -52,8 +52,20 @@ object PermissionsHandler {
             return Uri.parse(directoryString)
         }
 
-    fun setCitraDirectory(uriString: String?) =
+    fun setCitraDirectory(uriString: String?) {
+        if (!uriString.isNullOrEmpty()) {
+            val root = DocumentFile.fromTreeUri(CitraApplication.appContext, Uri.parse(uriString))
+                ?: throw IllegalArgumentException("Invalid data directory")
+            val marker = root.findFile("azahar-lite-owned.txt")
+            if (marker == null) {
+                require(listOf("config", "nand", "sdmc", "states").none { root.findFile(it) != null }) {
+                    CitraApplication.appContext.getString(org.citra.citra_emu.R.string.lite_separate_storage)
+                }
+                checkNotNull(root.createFile("text/plain", "azahar-lite-owned.txt"))
+            }
+        }
         preferences.edit().putString(CITRA_DIRECTORY, uriString).apply()
+    }
 
     fun compatibleSelectDirectory(activityLauncher: ActivityResultLauncher<Uri?>) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

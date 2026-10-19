@@ -88,7 +88,16 @@ class Settings {
                 SettingsFile.saveFile(fileName, iniSections, view)
             }
         } else {
-            // TODO: Implement per game settings
+            try {
+                SettingsFile.saveLiteGameSettings(gameId!!, LitePerformance.settings().map { setting ->
+                    sections[setting.section!!]?.getSetting(setting.key!!) ?: setting
+                })
+            } catch (e: Exception) {
+                view.showToastMessage(
+                    CitraApplication.appContext.getString(R.string.error_saving, gameId, e.message),
+                    true
+                )
+            }
         }
     }
 

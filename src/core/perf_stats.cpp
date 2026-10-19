@@ -31,10 +31,14 @@ namespace Core {
 
 bool PerfStats::game_frames_updated = true;
 
-PerfStats::PerfStats(u64 title_id) : title_id(title_id) {}
+PerfStats::PerfStats(u64 title_id) : title_id(title_id) {
+    if (Settings::values.record_frame_times) {
+        lite_game_intervals.reserve(36000);
+    }
+}
 
 PerfStats::~PerfStats() {
-    if (!Settings::values.record_frame_times || title_id == 0) {
+    if (!Settings::values.record_frame_times || title_id == 0 || current_index <= IgnoreFrames) {
         return;
     }
 
@@ -48,6 +52,14 @@ PerfStats::~PerfStats() {
         fmt::format("{}/{:%F-%H-%M}_{:016X}.csv", path, *std::localtime(&t), title_id);
     FileUtil::IOFile file(filename, "w");
     file.WriteString(stream.str());
+    if (!lite_game_intervals.empty()) {
+        FileUtil::IOFile intervals_file(filename + ".game-intervals.csv", "w");
+        std::ostringstream intervals;
+        for (double ms : lite_game_intervals) {
+            intervals << ms << '\n';
+        }
+        intervals_file.WriteString(intervals.str());
+    }
 }
 
 void PerfStats::BeginSVCProcessing() {
@@ -110,6 +122,15 @@ void PerfStats::EndSystemFrame() {
 void PerfStats::EndGameFrame() {
     std::scoped_lock lock{object_mutex};
 
+    if (lite_game_intervals.capacity() != 0) {
+        const auto now = Clock::now();
+        if (lite_has_previous_game_frame && lite_game_intervals.size() < 36000) {
+            lite_game_intervals.push_back(
+                std::chrono::duration<double, std::milli>(now - lite_previous_game_frame).count());
+        }
+        lite_previous_game_frame = now;
+        lite_has_previous_game_frame = true;
+    }
     game_frames += 1;
     PerfStats::game_frames_updated = true;
 }

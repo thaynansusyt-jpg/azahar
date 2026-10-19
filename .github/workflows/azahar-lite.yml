@@ -1,0 +1,46 @@
+name: Azahar Lite ARM64
+on:
+  workflow_dispatch:
+  push:
+    branches: ['azahar-lite-*']
+permissions:
+  contents: read
+jobs:
+  apk:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install pinned Android tools
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0' 'ndk;27.3.13750724' 'cmake;3.30.3'
+      - name: Monotonic clock contract
+        run: g++ -std=c++20 -fsyntax-only -Isrc lite/tests/clock_contract.cpp
+      - name: Python diagnostic tests
+        run: python3 -m unittest discover -s lite/tests -v
+      - name: Build ARM64 emulator
+        working-directory: src/android
+        run: ./gradlew --no-daemon assembleVanillaRelease
+      - name: Verify signature, identity and emulator library
+        run: |
+          APK=src/android/app/build/outputs/apk/vanilla/release/app-vanilla-release.apk
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" | tee lite/evidence/apk-signature.txt
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee lite/evidence/apk-badging.txt
+          grep -q "package: name='org.azaharlite.emu'" lite/evidence/apk-badging.txt
+          python3 lite/tools/verify_apk.py "$APK"
+          sha256sum "$APK" | tee lite/evidence/apk-sha256.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Azahar-Lite-0.1-ARM64
+          path: |
+            src/android/app/build/outputs/apk/vanilla/release/*.apk
+            lite/evidence/
+          if-no-files-found: error

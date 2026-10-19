@@ -21,7 +21,7 @@ plugins {
  * next 680 years.
  */
 val autoVersion = (((System.currentTimeMillis() / 1000) - 1451606400) / 10).toInt()
-val abiFilter = listOf("arm64-v8a", "x86_64")
+val abiFilter = listOf("arm64-v8a")
 
 val downloadedJniLibsPath = "${layout.buildDirectory.get().asFile.path}/downloadedJniLibs"
 
@@ -63,11 +63,11 @@ android {
     defaultConfig {
         // The application ID refers to Lime3DS to allow for
         // the Play Store listing, which was originally set up for Lime3DS, to still be used.
-        applicationId = "org.azahar_emu.azahar"
+        applicationId = "org.azaharlite.emu"
         minSdk = 29
         targetSdk = 37
-        versionCode = autoVersion
-        versionName = getGitVersion()
+        versionCode = 1
+        versionName = "0.1-performance"
 
         ndk {
             //noinspection ChromeOsAbiSupport
@@ -180,7 +180,7 @@ android {
         register("googlePlay") {
             dimension = "version"
             versionNameSuffix = "-googleplay"
-            applicationId = "io.github.lime3ds.android"
+            applicationId = "org.azaharlite.emu.play"
         }
     }
 

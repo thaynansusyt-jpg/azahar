@@ -1,0 +1,10 @@
+Base: 219d743a1e698101fe1ab8bef43e6563126c3c27 (2126.2)
+Inspected real loader and Android scanner: .3ds and .cci present; no modifications to format handling.
+Existing invalid/encrypted error handling preserved in NativeLibrary.kt.
+Existing device RAM detection, FPS/speed/frame-time/memory/temperature overlay preserved.
+All Android resource XML files parsed using ElementTree.
+New workflow YAML parsed using PyYAML; this is not a CI execution.
+Clock contract compiled with host g++ in C++20 syntax-only mode, using real perf_stats.h.
+Python analyzer: four tests passed, including 30 FPS and p99/hitch scenarios.
+Android baseline and modified builds: blocked downloading Gradle; native/Kotlin compilation not reached.
+No game execution, Samsung device access, GPU benchmarks, APK or signature results available.

@@ -6,6 +6,7 @@
 #include <memory>
 #include <ranges>
 #include <sstream>
+#include <type_traits>
 #include <unordered_map>
 #include <INIReader.h>
 #include <boost/hana/string.hpp>
@@ -171,7 +172,7 @@ void Config::ReadValues() {
         default_shader = "Horizontal (builtin)";
     Settings::values.pp_shader_name =
         android_config->GetString("Renderer", "pp_shader_name", default_shader);
-    ReadSetting("Renderer", Settings::values.filter_mode);
+    Settings::values.filter_mode = android_config->GetBoolean("Renderer", "filter_mode", false);
     ReadSetting("Renderer", Settings::values.use_integer_scaling);
 
     ReadSetting("Renderer", Settings::values.bg_red);
@@ -349,4 +350,43 @@ void Config::Reload() {
     }
     LoadINI(DefaultINI::android_config_default_file_content);
     ReadValues();
+}
+
+// Lite title overrides deliberately cover only the fields owned by the presets.
+void Config::ApplyLiteGameSettings(u64 program_id) {
+    if (program_id == 0) {
+        return;
+    }
+    std::ostringstream name;
+    name << FileUtil::GetUserPath(FileUtil::UserPath::UserDir) << "GameSettings/"
+         << std::uppercase << std::hex << std::setw(16) << std::setfill('0') << program_id << ".ini";
+    std::string data;
+    if (!FileUtil::ReadFileToString(true, name.str(), data) || data.empty()) {
+        return;
+    }
+    INIReader ini(data.c_str(), data.size());
+    if (ini.ParseError() != 0) {
+        LOG_WARNING(Config, "Ignoring invalid Lite title settings");
+        return;
+    }
+    auto boolean = [&](const char* section, auto& setting) {
+        setting = ini.GetBoolean(section, setting.GetLabel(), setting.GetValue());
+    };
+    auto integer = [&](const char* section, auto& setting) {
+        setting = static_cast<std::remove_cvref_t<decltype(setting.GetValue())>>(
+            ini.GetInteger(section, setting.GetLabel(), static_cast<long>(setting.GetValue())));
+    };
+    integer("Core", Settings::values.cpu_clock_percentage);
+    integer("Renderer", Settings::values.resolution_factor);
+    integer("Renderer", Settings::values.texture_filter);
+    integer("Renderer", Settings::values.factor_3d);
+    boolean("Renderer", Settings::values.use_disk_shader_cache);
+    boolean("Renderer", Settings::values.shaders_accurate_mul);
+    boolean("Renderer", Settings::values.filter_mode);
+    boolean("Renderer", Settings::values.async_shader_compilation);
+    boolean("Renderer", Settings::values.disable_right_eye_render);
+    Settings::values.frame_limit = ini.GetReal("Renderer", "frame_limit", Settings::values.frame_limit.GetValue());
+    if (!ini.GetBoolean("Renderer", "use_frame_limit", true)) {
+        Settings::values.frame_limit = 0;
+    }
 }

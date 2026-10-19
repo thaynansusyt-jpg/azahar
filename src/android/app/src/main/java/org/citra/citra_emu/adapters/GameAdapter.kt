@@ -495,6 +495,14 @@ class GameAdapter(
         val bottomSheetDialog = BottomSheetDialog(context)
         bottomSheetDialog.setContentView(bottomSheetView)
 
+        bottomSheetView.findViewById<MaterialButton>(R.id.lite_game_settings).setOnClickListener {
+            org.citra.citra_emu.features.settings.ui.SettingsActivity.launch(
+                context,
+                org.citra.citra_emu.features.settings.model.Settings.SECTION_RENDERER,
+                String.format("%016X", game.titleId)
+            )
+            bottomSheetDialog.dismiss()
+        }
         val insertable = game.isInsertable
         val inserted = insertable && (preferences.getString("insertedCartridge", "") == game.path)
 

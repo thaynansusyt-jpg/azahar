@@ -295,6 +295,7 @@ static Core::System::ResultStatus RunCitra(const std::string& filepath) {
         app_loader->ReadProgramId(program_id);
         system.RegisterAppLoaderEarly(app_loader);
     }
+    Config::ApplyLiteGameSettings(program_id);
     system.ApplySettings();
     Settings::LogSettings();
 

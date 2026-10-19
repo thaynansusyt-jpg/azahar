@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <functional>
 #include <mutex>
+#include <vector>
 #include "common/bit_field.h"
 #include "common/common_types.h"
 #include "common/thread.h"
@@ -25,7 +26,7 @@ public:
     explicit PerfStats(u64 title_id);
     ~PerfStats();
 
-    using Clock = std::chrono::high_resolution_clock;
+    using Clock = std::chrono::steady_clock;
 
     enum class PerfArticEventBits {
         NONE = 0,
@@ -131,6 +132,10 @@ private:
     u64 title_id{0};
     /// Current index for writing to the perf_history array
     std::size_t current_index{0};
+    // Optional ten-minute game-submission trace (at 60 Hz), not display scanout.
+    std::vector<double> lite_game_intervals;
+    Clock::time_point lite_previous_game_frame{};
+    bool lite_has_previous_game_frame = false;
     /// Stores an hour of historical frametime data useful for processing and tracking performance
     /// regressions with code changes.
     std::array<double, 216000> perf_history{};
@@ -180,7 +185,7 @@ private:
 
 class FrameLimiter {
 public:
-    using Clock = std::chrono::high_resolution_clock;
+    using Clock = std::chrono::steady_clock;
 
     void DoFrameLimiting(std::chrono::microseconds current_system_time_us);
 
