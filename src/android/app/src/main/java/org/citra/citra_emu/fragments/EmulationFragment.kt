@@ -877,6 +877,11 @@ class EmulationFragment :
                     true
                 }
 
+                R.id.menu_emulation_individual_opacity -> {
+                    showIndividualOpacityDialog()
+                    true
+                }
+
                 R.id.menu_emulation_adjust_opacity -> {
                     showAdjustOpacityDialog()
                     true
@@ -1356,56 +1361,90 @@ class EmulationFragment :
             .show()
     }
 
-    private fun showAdjustOpacityDialog() {
-        val sliderBinding = DialogSliderBinding.inflate(layoutInflater)
+    private fun showIndividualOpacityDialog() {
+        val controls = listOf(
+            "A" to NativeLibrary.ButtonType.BUTTON_A,
+            "B" to NativeLibrary.ButtonType.BUTTON_B,
+            "X" to NativeLibrary.ButtonType.BUTTON_X,
+            "Y" to NativeLibrary.ButtonType.BUTTON_Y,
+            "L" to NativeLibrary.ButtonType.TRIGGER_L,
+            "R" to NativeLibrary.ButtonType.TRIGGER_R,
+            "ZL" to NativeLibrary.ButtonType.BUTTON_ZL,
+            "ZR" to NativeLibrary.ButtonType.BUTTON_ZR,
+            "START" to NativeLibrary.ButtonType.BUTTON_START,
+            "SELECT" to NativeLibrary.ButtonType.BUTTON_SELECT,
+            "D-Pad" to NativeLibrary.ButtonType.DPAD,
+            "Circle Pad" to NativeLibrary.ButtonType.STICK_LEFT,
+            "C-Stick" to NativeLibrary.ButtonType.STICK_C,
+            "HOME" to NativeLibrary.ButtonType.BUTTON_HOME,
+            "Trocar telas" to NativeLibrary.ButtonType.BUTTON_SWAP,
+            "Turbo" to NativeLibrary.ButtonType.BUTTON_TURBO,
+            "Combo" to Hotkey.COMBO_BUTTON.button
+        )
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.lite_individual_opacity)
+            .setItems(controls.map { it.first }.toTypedArray()) { _, which ->
+                showAdjustOpacityDialog("controlOpacity-${controls[which].second}")
+            }.show()
+    }
 
+    private fun showAdjustOpacityDialog(target: String = "controlOpacity") {
+        val sliderBinding = DialogSliderBinding.inflate(layoutInflater)
+        val existed = preferences.contains(target)
+        val previous = preferences.getInt(target, preferences.getInt("controlOpacity", 50))
+        var accepted = false
         sliderBinding.apply {
             slider.valueFrom = 0f
             slider.valueTo = 100f
-            slider.value = preferences.getInt("controlOpacity", 50).toFloat()
+            slider.value = previous.coerceIn(0, 100).toFloat()
             textValue.setText(slider.value.toInt().toString())
-
             textValue.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable) {
                     val value = s.toString().toIntOrNull()
-                    if (value == null || value < slider.valueFrom || value > slider.valueTo) {
-                        textInput.error = "Inappropriate Value"
+                    if (value == null || value !in 0..100) {
+                        textInput.error = "0–100"
                     } else {
                         textInput.error = null
                         slider.value = value.toFloat()
+                        setControlOpacity(value, target)
                     }
                 }
-
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             })
-
             slider.addOnChangeListener { _: Slider, value: Float, _: Boolean ->
-
-                if (textValue.text.toString() != slider.value.toInt().toString()) {
-                    textValue.setText(slider.value.toInt().toString())
+                if (textValue.text.toString() != value.toInt().toString()) {
+                    textValue.setText(value.toInt().toString())
                     textValue.setSelection(textValue.length())
-                    setControlOpacity(slider.value.toInt())
                 }
             }
-
             textInput.suffixText = "%"
         }
-        val previousProgress = sliderBinding.slider.value.toInt()
-
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.emulation_control_opacity)
             .setView(sliderBinding.root)
-            .setNegativeButton(android.R.string.cancel) { _: DialogInterface?, _: Int ->
-                setControlOpacity(previousProgress)
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                setControlOpacity(sliderBinding.slider.value.toInt(), target)
+                accepted = true
             }
-            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
-                setControlOpacity(sliderBinding.slider.value.toInt())
+            .setNeutralButton(if (target == "controlOpacity") R.string.slider_default
+                else R.string.lite_inherit_opacity) { _, _ ->
+                if (target == "controlOpacity") {
+                    setControlOpacity(50, target)
+                } else {
+                    preferences.edit().remove(target).apply()
+                    binding.surfaceInputOverlay.refreshControls()
+                }
+                accepted = true
             }
-            .setNeutralButton(R.string.slider_default) { _: DialogInterface?, _: Int ->
-                setControlOpacity(50)
-            }
-            .show()
+            .setOnDismissListener {
+                if (!accepted) {
+                    if (existed) preferences.edit().putInt(target, previous).apply()
+                    else preferences.edit().remove(target).apply()
+                    binding.surfaceInputOverlay.refreshControls()
+                }
+            }.show()
     }
 
     private fun setControlScale(scale: Int, target: String) {
@@ -1444,9 +1483,9 @@ class EmulationFragment :
         binding.surfaceInputOverlay.refreshControls()
     }
 
-    private fun setControlOpacity(opacity: Int) {
+    private fun setControlOpacity(opacity: Int, target: String = "controlOpacity") {
         preferences.edit()
-            .putInt("controlOpacity", opacity)
+            .putInt(target, opacity.coerceIn(0, 100))
             .apply()
         binding.surfaceInputOverlay.refreshControls()
     }

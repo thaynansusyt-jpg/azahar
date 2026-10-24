@@ -18,4 +18,6 @@
     <string name="lite_async_vulkan_only">Este teste exige Vulkan. Se quiser testá-lo, escolha Vulkan no renderizador e reinicie o jogo. O backend não será alterado automaticamente.</string>
     <string name="lite_async_warning">Ativar shaders assíncronos e manter os dois olhos? No Vulkan, alguns desenhos aguardando compilação podem ser omitidos temporariamente. Efeitos podem desaparecer até o pipeline ficar pronto; usa CPU adicional. Desenhos pequenos, comuns nos menus, ainda podem esperar. Não garante maior fluidez. Reinicie o jogo após salvar.</string>
     <string name="lite_eye_warning">Desativar o olho direito e manter shaders síncronos? Pode reduzir trabalho gráfico em jogos 2D compatíveis, mas afeta visão estereoscópica e pode causar incompatibilidades em efeitos que dependem do segundo olho. Use profundidade 3D zero e confira os gráficos. Reinicie o jogo após salvar.</string>
+    <string name="lite_individual_opacity">Opacidade por controle</string>
+    <string name="lite_inherit_opacity">Usar opacidade geral</string>
 </resources>

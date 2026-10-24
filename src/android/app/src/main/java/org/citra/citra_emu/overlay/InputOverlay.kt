@@ -1131,7 +1131,8 @@ class InputOverlay(context: Context?, attrs: AttributeSet?) :
             scale *= (preferences.getInt("controlScale-$buttonId", 50) + 50).toFloat()
             scale /= 100f
 
-            val opacity: Int = preferences.getInt("controlOpacity", 50) * 255 / 100
+            val opacity = preferences.getInt("controlOpacity-${buttonId}",
+                preferences.getInt("controlOpacity", 50)).coerceIn(0, 100) * 255 / 100
 
             // Initialize the InputOverlayDrawableButton.
             val defaultStateBitmap = getBitmap(context, defaultResId, scale)
@@ -1204,7 +1205,8 @@ class InputOverlay(context: Context?, attrs: AttributeSet?) :
 
             scale /= 100f
 
-            val opacity: Int = preferences.getInt("controlOpacity", 50) * 255 / 100
+            val opacity = preferences.getInt("controlOpacity-${NativeLibrary.ButtonType.DPAD}",
+                preferences.getInt("controlOpacity", 50)).coerceIn(0, 100) * 255 / 100
 
             // Initialize the InputOverlayDrawableDpad.
             val defaultStateBitmap = getBitmap(context, defaultResId, scale)
@@ -1268,7 +1270,8 @@ class InputOverlay(context: Context?, attrs: AttributeSet?) :
             scale *= (preferences.getInt("controlScale-$joystick", 50) + 50).toFloat()
             scale /= 100f
 
-            val opacity: Int = preferences.getInt("controlOpacity", 50) * 255 / 100
+            val opacity = preferences.getInt("controlOpacity-${joystick}",
+                preferences.getInt("controlOpacity", 50)).coerceIn(0, 100) * 255 / 100
 
             // Initialize the InputOverlayDrawableJoystick.
             val bitmapOuter = getBitmap(context, resOuter, scale)
